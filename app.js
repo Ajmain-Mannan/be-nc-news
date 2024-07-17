@@ -3,6 +3,7 @@ const app = express();
 const { getTopics } = require("./controllers/topics.controller.js");
 const { getEndpoints } = require("./controllers/endpoints.controller.js");
 const { getArticleById, getArticles } = require("./controllers/articles.controller.js");
+const { getCommentsByArticleId } = require("./controllers/comments.controller");
 const { dbErrorHandler, customErrorHandler, serverErrorHandler } = require("./error-handlers");
 
 app.get("/api/topics", getTopics);
@@ -12,6 +13,8 @@ app.get('/api', getEndpoints)
 app.get("/api/articles/:article_id", getArticleById);
 
 app.get("/api/articles", getArticles);
+
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.use(dbErrorHandler);
 app.use(customErrorHandler);

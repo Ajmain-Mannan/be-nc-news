@@ -80,13 +80,12 @@ describe("/api/articles/:article_id", () => {
 });
 
 describe("/api/articles", () => {
-    test("GET:200 Responds with an array containing all articles and corresponding properties, sorted by date descending", () => {
+    test("GET:200 responds with an array containing all articles and corresponding properties, sorted by date descending", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
           expect(body.articles).toHaveLength(13);
-            expect(body.articles).toBeSortedBy("created_at", { descending: true });
           body.articles.forEach((article) => {
             expect(article).toMatchObject({
               article_id: expect.any(Number),
@@ -101,4 +100,58 @@ describe("/api/articles", () => {
           });
         });
     });
+    test("GET:200 articles are sorted by date descending", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.articles).toBeSortedBy("created_at", { descending: true });
+        });
+    });
   });
+
+  describe("/api/articles/:article_id/comments", () => {
+    test("GET:200 responds with an array of comments containing all comments for an article_id and all corresponding properties", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments.length).toBe(11);
+          body.comments.forEach((comment) => {
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              article_id: expect.any(Number),
+              body: expect.any(String),
+              votes: expect.any(Number),
+              author: expect.any(String),
+              created_at: expect.any(String),
+            });
+          });
+        });
+    });
+    test("GET:200 comments are sorted in descending order", () => {
+        return request(app)
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then(({ body }) =>
+            expect(body.comments).toBeSortedBy("created_at", { descending: true }),
+          );
+      });
+      test("GET:200 returns an empty array when comments do not exist for existing article", () => {
+        return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then(({ body }) => {
+         expect(body.comments).toEqual([]);
+      });
+  });
+  test("GET:404 responds with error message and status when given article id that does not exist", () => {
+    return request(app)
+      .get("/api/articles/54321/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Not Found");
+      });
+  });
+
+});
