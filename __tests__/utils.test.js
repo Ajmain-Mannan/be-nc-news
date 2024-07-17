@@ -2,8 +2,8 @@ const {
   convertTimestampToDate,
   createRef,
   formatComments,
-  checkArticleExists
 } = require("../db/seeds/utils");
+const { checkArticleExists } = require("../utils");
 const db = require("../db/connection");
 
 afterAll(() => db.end());
