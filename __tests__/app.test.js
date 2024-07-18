@@ -153,5 +153,47 @@ describe("/api/articles", () => {
         expect(body.message).toBe("Not Found");
       });
   });
-
+  test("POST:201 responds with new comment posted for an article", () => {
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send({
+        username: "butter_bridge",
+        body: "test comment",
+      })
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject({
+          article_id: 5,
+          comment_id: expect.any(Number),
+          author: "butter_bridge",
+          body: "test comment",
+          votes:0,
+          created_at: expect.any(String)
+        });
+      });
+  });
+  test("POST:400 responds with error message when article id is invalid", () => {
+    return request(app)
+      .post("/api/articles/invalid-id/comments")
+      .send({
+        username: "butter_bridge",
+        body: "test comment",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad Request");
+      });
+  });
+  test("POST:400 responds with error status and message when object has a missing property", () => {
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send({
+        body: "test comment"
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad Request");
+      });
+  })
+  
 });

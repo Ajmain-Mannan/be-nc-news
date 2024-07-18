@@ -1,5 +1,6 @@
 const db = require("../db/connection");
 const { checkArticleExists } = require("../utils");
+const format = require("pg-format");
 
 exports.fetchCommentsByArticleId = (article_id) => {
     return checkArticleExists(article_id)
@@ -20,3 +21,18 @@ exports.fetchCommentsByArticleId = (article_id) => {
         return rows;
     });
     };
+
+    exports.insertArticleComment = (article_id, comment) => {
+        const {username, body} = comment
+        const values = [article_id, username, body]
+        const queryString = format(
+          `INSERT INTO comments 
+          (article_id, author, body) 
+           VALUES (%L) 
+           RETURNING *`,
+          values
+        );
+        return db.query(queryString).then(({rows}) => {
+            return rows[0]
+        })
+    }
