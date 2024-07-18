@@ -121,7 +121,7 @@ describe("/api/articles/:article_id", () => {
 });
 
 describe("/api/articles", () => {
-    test("GET:200 responds with an array containing all articles and corresponding properties, sorted by date descending", () => {
+    test("GET:200 responds with an array containing all articles and corresponding properties", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
@@ -149,6 +149,24 @@ describe("/api/articles", () => {
             expect(body.articles).toBeSortedBy("created_at", { descending: true });
         });
     });
+    test("GET:200 responds with articles sorted and ordered by specified query", () => {
+        return request(app)
+          .get("/api/articles?sort_by=author&&order=ASC")
+          .expect(200)
+          .then(({ body } ) => {
+            expect(body.articles).toHaveLength(13);
+            expect(body.articles).toBeSortedBy("author", { ascending: true });
+          });
+      });
+    test("GET:400 responds with error status and message when given invalid sort by or order query", () => {
+        return request(app)
+          .get("/api/articles?sort_by=ninvalidSort&&order=invalidOrder")
+          .expect(400)
+          .then(({ body } ) => {
+            expect(body.message).toBe("Bad Request")
+
+          });
+      });
   });
 
   describe("/api/articles/:article_id/comments", () => {
