@@ -22,7 +22,7 @@ exports.fetchCommentsByArticleId = (article_id) => {
     });
     };
 
-    exports.insertArticleComment = (article_id, comment) => {
+exports.insertArticleComment = (article_id, comment) => {
         const {username, body} = comment
         const values = [article_id, username, body]
         const queryString = format(
@@ -36,3 +36,14 @@ exports.fetchCommentsByArticleId = (article_id) => {
             return rows[0]
         })
     }
+
+exports.removeCommentById = (comment_id) => {
+    return db
+        .query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *`, [comment_id])
+        .then(({ rows }) => {
+            if (!rows.length) {
+                return Promise.reject({ status: 404, message: "Not Found",
+                 });
+             }
+         });
+  };

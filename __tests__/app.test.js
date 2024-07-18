@@ -83,7 +83,6 @@ describe("/api/articles/:article_id", () => {
       .send({ inc_votes: 100 })
       .expect(200)
       .then(({ body }) => {
-        console.log(body.article)
         expect(body.article).toMatchObject({
             author: "icellusedkars",
             article_id: 8,
@@ -239,3 +238,29 @@ describe("/api/articles", () => {
   })
 
  })
+
+ describe("/api/comments/:comment_id", () => {
+    test("DELETE:204 deletes a comment by a given id and returns no content", () => {
+        return request(app)
+            .delete("/api/comments/7")
+            .expect(204)
+            .then(({ body }) => {
+                expect(body).toEqual({});
+            })
+    });
+    test("DELETE:404 returns error status and message when comment does not exist", () => {
+        return request(app)
+          .delete("/api/comments/54321")
+          .expect(404)
+          .then(({ body }) =>
+            expect(body.message).toBe("Not Found"),
+          );
+      });
+    test("DELETE:400 returns error status and message when comment id is invalid", () => {
+        return request(app)
+          .delete("/api/comments/invalid-id")
+          .expect(400)
+          .then(({ body }) => 
+            expect(body.message).toBe("Bad Request"));
+      });
+});
