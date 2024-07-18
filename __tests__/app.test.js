@@ -77,6 +77,48 @@ describe("/api/articles/:article_id", () => {
                 expect(body.message).toBe("Not Found");
             });
     });
+    test("PATCH:200 responds with updated article", () => {
+        return request(app)
+      .patch("/api/articles/8")
+      .send({ inc_votes: 100 })
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body.article)
+        expect(body.article).toMatchObject({
+            author: "icellusedkars",
+            article_id: 8,
+            title: "Does Mitch predate civilisation?",
+            body: "Archaeologists have uncovered a gigantic statue from the dawn of humanity, and it has an uncanny resemblance to Mitch. Surely I am not the only person who can see this?!",
+            topic: "mitch",
+            created_at: expect.any(String),
+            votes: 100,
+            article_img_url: expect.any(String)
+        });
+        })  
+    });
+    test("PATCH:404 responds with error status and message when article id does not exist", () => {
+        return request(app)
+          .patch("/api/articles/54321")
+          .send({ inc_votes: 100 })
+          .expect(404)
+          .then(({ body }) =>
+            expect(body.message).toBe("Not Found"),
+          );
+      });
+      test("PATCH:400 responds with error message and status when given invalid article id", () => {
+        return request(app)
+          .patch("/api/articles/invalid-id")
+          .send({ inc_votes: 100 })
+          .expect(400)
+          .then(({ body }) => expect(body.message).toBe("Bad Request"));
+      });
+      test("PATCH:400 responds with error status and message when object is missing property", () => {
+        return request(app)
+          .patch("/api/articles/8")
+          .send({})
+          .expect(400)
+          .then(({ body }) => expect(body.message).toBe("Bad Request"));
+      });
 });
 
 describe("/api/articles", () => {
@@ -195,5 +237,5 @@ describe("/api/articles", () => {
         expect(body.message).toBe("Bad Request");
       });
   })
-  
-});
+
+ })
