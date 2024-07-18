@@ -3,7 +3,7 @@ exports.serverErrorHandler = (err, request, response, next) => {
 };
 
 exports.dbErrorHandler = (err, request, response, next) => {
-  if (err.code === "22P02" || err.code === "23502") {
+  if (err.code === "22P02" || err.code === "23502" || err.code === "42601") {
       response.status(400).send({ message: "Bad Request" });
   } else {
       next(err);

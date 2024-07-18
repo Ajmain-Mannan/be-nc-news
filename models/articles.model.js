@@ -11,9 +11,13 @@ exports.fetchArticleById = (article_id) => {
         });
 };
 
-exports.fetchArticles = () => {
-    return db
-        .query(
+exports.fetchArticles = (sort_by = "created_at", order = "DESC") => {
+    const sortList = ["article_id", "title", "topic", "author", "body", "created_at", "votes", "comment_count"];
+    const orderList = ["ASC", "DESC"];
+    if (!sortList.includes(sort_by) || !orderList.includes(order)) {
+        return Promise.reject({ status: 400, message: "Bad Request" });
+      }
+    let queryString = 
             `SELECT
                 articles.article_id,
                 articles.title,
@@ -26,11 +30,11 @@ exports.fetchArticles = () => {
             FROM articles
             LEFT JOIN comments ON articles.article_id = comments.article_id
             GROUP BY articles.article_id
-            ORDER BY articles.created_at DESC;`
-        )
-        .then((response) => {
-            return response.rows;
-        });
+            ORDER BY ${sort_by} ${order};`;
+
+            return db.query(queryString).then(({ rows }) => {
+                return rows;
+            });
 };
 
 exports.updateArticleById = (article_id, inc_votes) => {
