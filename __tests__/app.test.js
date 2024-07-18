@@ -264,3 +264,21 @@ describe("/api/articles", () => {
             expect(body.message).toBe("Bad Request"));
       });
 });
+
+describe("/api/users", () => {
+    test("GET:200 responds with an array of users with all corresponding properties", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.users).toHaveLength(4);
+          body.users.forEach((eachUser) => {
+            expect(eachUser).toMatchObject({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            });
+          });
+        });
+    });
+  });
