@@ -23,6 +23,13 @@ exports.fetchCommentsByArticleId = (article_id) => {
     };
 
 exports.insertArticleComment = (article_id, comment) => {
+  return checkArticleExists(article_id)
+  .then((result) => {
+    if (result === false) {
+      return Promise.reject({ status: 404, message: "Not Found" });
+    }
+  })
+  .then(() => {
         const {username, body} = comment
         const values = [article_id, username, body]
         const queryString = format(
@@ -35,6 +42,7 @@ exports.insertArticleComment = (article_id, comment) => {
         return db.query(queryString).then(({rows}) => {
             return rows[0]
         })
+      });
     }
 
 exports.removeCommentById = (comment_id) => {
