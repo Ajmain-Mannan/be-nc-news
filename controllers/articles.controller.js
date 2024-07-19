@@ -12,9 +12,9 @@ exports.getArticleById = (request, response, next) => {
 };
 
 exports.getArticles = (request, response, next) => {
-    fetchArticles(request.query.sort_by, request.query.order).then((articles) => {
-        response.status(200).send({ articles });
-    })
+    const { sort_by, order, topic } = request.query;
+    fetchArticles(sort_by, order, topic)
+    .then((articles) => response.status(200).send({ articles }))
     .catch((err) => {
         next(err);
     });

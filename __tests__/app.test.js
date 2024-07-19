@@ -167,6 +167,25 @@ describe("/api/articles", () => {
 
           });
       });
+    test("GET:200 returns a filtered article by topic", () => {
+            return request(app)
+                .get("/api/articles?topic=mitch")
+                .expect(200)
+                .then(({ body }) => {
+                    expect(body.articles).toHaveLength(12);
+                    body.articles.forEach((article) => {
+                        expect(article.topic).toBe("mitch");
+                    });
+                });
+        });
+        test("GET:200 returns an empty array when topic is invalid", () => {
+            return request(app)
+                .get("/api/articles?topic=invalidTopic")
+                .expect(200)
+                .then(({ body }) => {
+                    expect(body.articles).toEqual([]);
+                });
+        });
   });
 
   describe("/api/articles/:article_id/comments", () => {
