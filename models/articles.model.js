@@ -12,9 +12,9 @@ exports.fetchArticleById = (article_id) => {
 };
 
 exports.fetchArticles = (sort_by = "created_at", order = "DESC", topic) => {
-    const queryValues = [];
     const sortList = ["article_id", "title", "topic", "author", "body", "created_at", "votes", "comment_count"];
     const orderList = ["ASC", "DESC"];
+    const queryValues = [];
 
 
     let queryString = 
@@ -35,8 +35,7 @@ exports.fetchArticles = (sort_by = "created_at", order = "DESC", topic) => {
         queryValues.push(topic);
     }
 
-    queryString += ` GROUP BY articles.article_id
-                    ORDER BY ${sort_by} ${order};`;
+    queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`;
 
     return db.query(queryString, queryValues).then(({ rows }) => {
         return rows;
