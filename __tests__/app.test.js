@@ -118,6 +118,13 @@ describe("/api/articles/:article_id", () => {
           .expect(400)
           .then(({ body }) => expect(body.message).toBe("Bad Request"));
       });
+      test("PATCH:400 responds with error status and message when inc votes has invalid data type", () => {
+        return request(app)
+          .patch("/api/articles/8")
+          .send({ inc_votes: 'invalid'})
+          .expect(400)
+          .then(({ body }) => expect(body.message).toBe("Bad Request"));
+      });
 });
 
 describe("/api/articles", () => {
@@ -229,7 +236,15 @@ describe("/api/articles", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.message).toBe("Not Found");
-      });
+      }); 
+  });
+  test("GET:400 responds with error message and status when given article id that is invalid", () => {
+    return request(app)
+      .get("/api/articles/invalid-id/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad Request");
+      }); 
   });
   test("POST:201 responds with new comment posted for an article", () => {
     return request(app)
@@ -262,6 +277,18 @@ describe("/api/articles", () => {
         expect(body.message).toBe("Bad Request");
       });
   });
+  test("POST:404 responds with error status and message when article does not exist", () => {
+    return request(app)
+      .post("/api/articles/54321/comments")
+      .send({
+        username: "butter_bridge",
+        body: "test comment",
+      })
+      .expect(404)
+      .then(({ body }) =>
+        expect(body.message).toBe("Not Found"),
+      );
+  });
   test("POST:400 responds with error status and message when object has a missing property", () => {
     return request(app)
       .post("/api/articles/5/comments")
@@ -273,7 +300,6 @@ describe("/api/articles", () => {
         expect(body.message).toBe("Bad Request");
       });
   })
-
  })
 
  describe("/api/comments/:comment_id", () => {
